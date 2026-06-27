@@ -1,0 +1,12 @@
+# Core dependencies — always required
+pyyaml
+requests
+
+# Office & PDF support (optional — only needed for .docx/.pptx/.xlsx/.csv/.pdf)
+# python-docx
+# python-pptx
+# openpyxl
+# pandas
+# PyMuPDF
+# xlrd
+# tabulate

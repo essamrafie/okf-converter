@@ -19,6 +19,9 @@ venv/
 .DS_Store
 Thumbs.db
 
+# Generated output
+okf-bundle/
+
 # Secrets / env
 .env
 *.key

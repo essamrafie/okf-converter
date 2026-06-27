@@ -51,10 +51,10 @@ cd okf-converter
 
 python3 -m venv .venv
 source .venv/bin/activate
-pip install pyyaml requests
+pip install -r requirements.txt
 
 # Optional — for Office & PDF support:
-pip install python-docx python-pptx openpyxl pandas PyMuPDF xlrd
+pip install python-docx python-pptx openpyxl pandas PyMuPDF xlrd tabulate
 ```
 
 ### 2. Convert
