@@ -79,46 +79,7 @@ CODE_EXTENSIONS = {".py", ".js", ".ts", ".sh"}
 CONFIG_EXTENSIONS = {".yaml", ".yml", ".json", ".toml", ".cfg", ".ini", ".env"}
 
 # ─────────────────────────────────────────────────────────────
-# ── Image extraction helper for OOXML files (docx, pptx) ──────────
-def _extract_ooxml_images(element, related_parts, max_size: int = 300) -> tuple[list[str], int]:
-    """Extract embedded images from a docx/pptx element as base64 JPEG data URIs.
-    Images are resized to fit within max_size pixels (longest side) and compressed
-    to keep concept files lean for LLM context windows.
-    Returns (image_markdown_parts, image_count)."""
-    import base64
-    from PIL import Image
-    import io
-
-    parts = []
-    count = 0
-    ns_blip = '{http://schemas.openxmlformats.org/drawingml/2006/main}blip'
-    ns_embed = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed'
-    for blip in element.findall(f'.//{ns_blip}'):
-        r_id = blip.get(ns_embed)
-        if r_id and r_id in related_parts:
-            try:
-                rp = related_parts[r_id]
-                img_data = rp.blob
-                img = Image.open(io.BytesIO(img_data))
-                # Resize if larger than max_size
-                w, h = img.size
-                if max(w, h) > max_size:
-                    ratio = max_size / max(w, h)
-                    img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
-                # Convert to RGB if RGBA (JPEG doesn't support alpha)
-                if img.mode in ('RGBA', 'P'):
-                    img = img.convert('RGB')
-                buf = io.BytesIO()
-                img.save(buf, format="JPEG", quality=75)
-                b64 = base64.b64encode(buf.getvalue()).decode()
-                parts.append(f"![Image {count+1}](data:image/jpeg;base64,{b64})")
-                count += 1
-            except Exception:
-                pass
-    return parts, count
-
-
-# ── Text extractors
+# Text extractors
 # ─────────────────────────────────────────────────────────────
 
 def extract_text(src: Path) -> tuple[str, str]:
@@ -166,14 +127,8 @@ def extract_text(src: Path) -> tuple[str, str]:
                         rows.append("|" + "|".join(["---"] * len(cells)) + "|")
                 parts.append("\n".join(rows))
 
-            # Images — convert each to base64 for multimodal LLMs
-            img_parts, img_count = _extract_ooxml_images(doc.element, doc.part.related_parts)
-            parts.extend(img_parts)
             body = "\n\n".join(parts)
-            note = "docx"
-            if img_count:
-                note = f"docx-{img_count}img"
-            return body, note
+            return body, "docx"
         except Exception as e:
             return f"[docx extraction error: {e}]", "error"
 
@@ -181,14 +136,9 @@ def extract_text(src: Path) -> tuple[str, str]:
     if ext == ".pptx":
         try:
             from pptx import Presentation
-            from pptx.enum.shapes import MSO_SHAPE_TYPE
-            import base64
-            from PIL import Image
-            import io
 
             prs = Presentation(str(src))
             slides = []
-            img_count = 0
             for i, slide in enumerate(prs.slides, 1):
                 texts = []
                 for shape in slide.shapes:
@@ -197,30 +147,10 @@ def extract_text(src: Path) -> tuple[str, str]:
                             t = para.text.strip()
                             if t:
                                 texts.append(t)
-                    # Extract embedded images
-                    if hasattr(shape, 'image') and shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
-                        try:
-                            img_data = shape.image.blob
-                            img = Image.open(io.BytesIO(img_data))
-                            w, h = img.size
-                            if max(w, h) > 300:
-                                ratio = 300 / max(w, h)
-                                img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
-                            if img.mode in ('RGBA', 'P'):
-                                img = img.convert('RGB')
-                            buf = io.BytesIO()
-                            img.save(buf, format="JPEG", quality=75)
-                            b64 = base64.b64encode(buf.getvalue()).decode()
-                            texts.append(f"![Slide {i} Image](data:image/jpeg;base64,{b64})")
-                            img_count += 1
-                        except Exception:
-                            pass
                 if texts:
                     slides.append(f"## Slide {i}\n\n" + "\n\n".join(texts))
 
             note = f"pptx-{len(prs.slides)}-slides"
-            if img_count:
-                note = f"pptx-{len(prs.slides)}-slides-{img_count}img"
             return "\n\n".join(slides), note
         except Exception as e:
             return f"[pptx extraction error: {e}]", "error"
