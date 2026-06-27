@@ -22,6 +22,12 @@ Thumbs.db
 # Generated output
 okf-bundle/
 
+# Large binaries
+sample-input/*.docx
+sample-input/*.pptx
+sample-input/*.pdf
+sample-input/*.xlsx
+
 # Secrets / env
 .env
 *.key
