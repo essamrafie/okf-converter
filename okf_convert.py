@@ -685,7 +685,7 @@ def convert(source_dir: Path, output_dir: Path, endpoint: str, model: str, api_k
 # Incremental sync
 # ─────────────────────────────────────────────────────────────
 
-def sync(source_dir: Path, output_dir: Path, endpoint: str, model: str, api_key: str, dry_run: bool) -> None:
+def sync(source_dir: Path, output_dir: Path, endpoint: str, model: str, api_key: str, dry_run: bool, prune: bool = False) -> None:
     if not output_dir.exists():
         print("Bundle directory does not exist. Run without --sync to do the initial conversion first.")
         sys.exit(1)
@@ -701,8 +701,10 @@ def sync(source_dir: Path, output_dir: Path, endpoint: str, model: str, api_key:
     print(f"  New     : {len(new_files)} file(s)")
     print(f"  Changed : {len(changed_files)} file(s)")
     print(f"  Deleted : {len(deleted_keys)} file(s)")
+    if deleted_keys and not prune:
+        print(f"  (use --prune to remove orphaned concepts)")
 
-    if not new_files and not changed_files and not deleted_keys:
+    if not new_files and not changed_files and (not deleted_keys or not prune):
         print("\nNothing to do — bundle is up to date.")
         return
 
@@ -726,17 +728,22 @@ def sync(source_dir: Path, output_dir: Path, endpoint: str, model: str, api_key:
         else:
             updated_concepts.append((out_path, meta))
 
-    # Handle deletions: remove concept file and manifest entry
-    for key in deleted_keys:
-        concept_rel = manifest[key].get("concept", "")
-        concept_path = output_dir / concept_rel if concept_rel else None
-        if concept_path and concept_path.exists():
-            if dry_run:
-                print(f"  [dry-run] would delete concept → {concept_path}")
-            else:
-                concept_path.unlink()
-                print(f"  Deleted concept: {concept_path.relative_to(output_dir)}")
-        del manifest[key]
+    # Handle deletions: only remove concept when --prune is set
+    if prune:
+        for key in deleted_keys:
+            concept_rel = manifest[key].get("concept", "")
+            concept_path = output_dir / concept_rel if concept_rel else None
+            if concept_path and concept_path.exists():
+                if dry_run:
+                    print(f"  [dry-run] would delete concept → {concept_path}")
+                else:
+                    concept_path.unlink()
+                    print(f"  Deleted concept: {concept_path.relative_to(output_dir)}")
+            del manifest[key]
+    else:
+        # Still remove deleted keys from manifest (don't track them), but keep the files
+        for key in deleted_keys:
+            del manifest[key]
 
     # Rebuild indexes and append to log
     rebuild_root_index(output_dir, source_dir, manifest, dry_run)
@@ -791,7 +798,8 @@ def main():
     parser.add_argument("--api-key",  default=default_key,
                         help="API key (or set LITELLM_API_KEY or DEEPSEEK_API_KEY env var, "
                              "or save to ~/deepseek_api)")
-    parser.add_argument("--sync",     action="store_true",       help="Incremental sync: only process new/changed files")
+    parser.add_argument("--sync",     action="store_true",       help="Incremental sync: only process new/changed files (keeps orphaned concepts)")
+    parser.add_argument("--prune",    action="store_true",       help="With --sync: remove concepts for deleted source files")
     parser.add_argument("--dry-run",  action="store_true",       help="Print what would happen without writing files")
 
     args   = parser.parse_args()
@@ -818,6 +826,7 @@ def main():
             model=args.model,
             api_key=args.api_key,
             dry_run=args.dry_run,
+            prune=args.prune,
         )
     else:
         if not args.dry_run and output.exists() and any(output.iterdir()):

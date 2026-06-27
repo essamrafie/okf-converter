@@ -122,6 +122,117 @@ def okf_search(input_dir: str, query: str) -> str:
 
 
 @mcp.tool()
+def okf_read_concept(bundle_dir: str, concept_name: str) -> str:
+    """Find and read a concept by name from an OKF bundle.
+
+    Searches the bundle for any concept whose filename or title matches the given name.
+    Returns the full frontmatter + body of the matching concept.
+
+    Args:
+        bundle_dir: Path to the OKF bundle directory. Relative paths like 'okf-bundle' are resolved under the project home.
+        concept_name: Name or partial name of the concept to find (e.g. 'quick wins', 'integration plan').
+    """
+    bd = Path(_resolve_path(bundle_dir))
+
+    # If not found, try common locations
+    if not bd.is_dir():
+        alt = Path.home() / "dev" / "okf-converter" / bundle_dir
+        if alt.is_dir():
+            bd = alt
+
+    if not bd.is_dir():
+        return json.dumps({"error": f"Bundle directory not found: {bd}"})
+
+    from okf_convert import RESERVED_FILENAMES
+    import yaml
+
+    query = concept_name.lower()
+    matches = []
+
+    for md in sorted(bd.rglob("*.md")):
+        if md.stem.lower() in RESERVED_FILENAMES:
+            continue
+        if md.parent.name.startswith("."):
+            continue
+
+        raw = md.read_text(encoding="utf-8", errors="replace")
+        title = md.stem
+        desc = ""
+
+        if raw.startswith("---"):
+            try:
+                end = raw.index("---", 3)
+                fm = yaml.safe_load(raw[3:end])
+                title = fm.get("title", md.stem)
+                desc = fm.get("description", "")
+            except Exception:
+                pass
+
+        if query in title.lower() or query in desc.lower() or query in md.stem.lower():
+            matches.append({
+                "path": str(md.relative_to(bd)),
+                "title": title,
+                "description": desc,
+                "content": raw,
+            })
+
+    return json.dumps({
+        "concept_name": concept_name,
+        "matches_found": len(matches),
+        "matches": matches,
+    }, indent=2)
+
+
+@mcp.tool()
+def okf_search_bundle(bundle_dir: str, query: str) -> str:
+    """Search for text inside all concept markdown files in an OKF bundle.
+
+    Searches the full content (frontmatter + body) of every concept.
+
+    Args:
+        bundle_dir: Path to the OKF bundle directory.
+        query: Text to search for (case-insensitive).
+    """
+    import re
+
+    bd = Path(_resolve_path(bundle_dir))
+
+    # If not found, try common locations
+    if not bd.is_dir():
+        alt = Path.home() / "dev" / "okf-converter" / bundle_dir
+        if alt.is_dir():
+            bd = alt
+
+    if not bd.is_dir():
+        return json.dumps({"error": f"Bundle directory not found: {bd}"})
+
+    from okf_convert import RESERVED_FILENAMES
+
+    results = []
+    for md in sorted(bd.rglob("*.md")):
+        if md.stem.lower() in RESERVED_FILENAMES:
+            continue
+        if md.parent.name.startswith("."):
+            continue
+
+        raw = md.read_text(encoding="utf-8", errors="replace")
+        lines = raw.split("\n")
+        for i, line in enumerate(lines, 1):
+            if re.search(query, line, re.IGNORECASE):
+                results.append({
+                    "file": str(md.relative_to(bd)),
+                    "line": i,
+                    "match": line.strip()[:200],
+                })
+
+    return json.dumps({
+        "query": query,
+        "matches": len(results),
+        "results": results[:50],
+    }, indent=2)
+
+
+@mcp.tool()
 def okf_preview(input_dir: str) -> str:
     """Preview a directory — count supported files by type without converting.
 
@@ -201,10 +312,13 @@ def okf_sync(
     llm_endpoint: str = DEFAULT_ENDPOINT,
     llm_model: str = DEFAULT_MODEL,
     api_key: str = "",
+    prune: bool = False,
 ) -> str:
     """Incrementally sync an existing OKF bundle with source directory changes.
 
     Only processes new, modified, or deleted files since the last conversion.
+    By default, deleted source files keep their concepts in the bundle.
+    Set prune=True to also remove concepts for deleted source files.
 
     Args:
         input_dir: Path to the source directory.
@@ -212,6 +326,7 @@ def okf_sync(
         llm_endpoint: OpenAI-compatible LLM endpoint for enrichment.
         llm_model: Model name for enrichment.
         api_key: API key for the LLM endpoint.
+        prune: If true, remove concepts for deleted source files.
     """
     src = Path(_resolve_path(input_dir))
     out = Path(_resolve_path(output_dir))
@@ -236,6 +351,7 @@ def okf_sync(
                 model=llm_model,
                 api_key=key,
                 dry_run=False,
+                prune=prune,
             )
         return buf.getvalue()
     except Exception as e:
