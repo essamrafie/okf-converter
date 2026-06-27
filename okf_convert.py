@@ -80,8 +80,10 @@ CONFIG_EXTENSIONS = {".yaml", ".yml", ".json", ".toml", ".cfg", ".ini", ".env"}
 
 # ─────────────────────────────────────────────────────────────
 # ── Image extraction helper for OOXML files (docx, pptx) ──────────
-def _extract_ooxml_images(element, related_parts) -> tuple[list[str], int]:
-    """Extract embedded images from a docx/pptx element as base64 PNG data URIs.
+def _extract_ooxml_images(element, related_parts, max_size: int = 800) -> tuple[list[str], int]:
+    """Extract embedded images from a docx/pptx element as base64 JPEG data URIs.
+    Images are resized to fit within max_size pixels (longest side) and compressed
+    to keep concept files lean for LLM context windows.
     Returns (image_markdown_parts, image_count)."""
     import base64
     from PIL import Image
@@ -98,10 +100,18 @@ def _extract_ooxml_images(element, related_parts) -> tuple[list[str], int]:
                 rp = related_parts[r_id]
                 img_data = rp.blob
                 img = Image.open(io.BytesIO(img_data))
+                # Resize if larger than max_size
+                w, h = img.size
+                if max(w, h) > max_size:
+                    ratio = max_size / max(w, h)
+                    img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+                # Convert to RGB if RGBA (JPEG doesn't support alpha)
+                if img.mode in ('RGBA', 'P'):
+                    img = img.convert('RGB')
                 buf = io.BytesIO()
-                img.save(buf, format="PNG")
+                img.save(buf, format="JPEG", quality=75)
                 b64 = base64.b64encode(buf.getvalue()).decode()
-                parts.append(f"![Image {count+1}](data:image/png;base64,{b64})")
+                parts.append(f"![Image {count+1}](data:image/jpeg;base64,{b64})")
                 count += 1
             except Exception:
                 pass
@@ -192,10 +202,16 @@ def extract_text(src: Path) -> tuple[str, str]:
                         try:
                             img_data = shape.image.blob
                             img = Image.open(io.BytesIO(img_data))
+                            w, h = img.size
+                            if max(w, h) > 800:
+                                ratio = 800 / max(w, h)
+                                img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+                            if img.mode in ('RGBA', 'P'):
+                                img = img.convert('RGB')
                             buf = io.BytesIO()
-                            img.save(buf, format="PNG")
+                            img.save(buf, format="JPEG", quality=75)
                             b64 = base64.b64encode(buf.getvalue()).decode()
-                            texts.append(f"![Slide {i} Image](data:image/png;base64,{b64})")
+                            texts.append(f"![Slide {i} Image](data:image/jpeg;base64,{b64})")
                             img_count += 1
                         except Exception:
                             pass
