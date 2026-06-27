@@ -1,0 +1,395 @@
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [8089]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: aa7cc112fe7b45c69714fffa83f72372
+INFO:     10.55.68.4:55537 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55538 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55539 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55540 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55542 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: aa7cc112fe7b45c69714fffa83f72372
+INFO:     10.55.68.4:55543 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: a82e340d5f54453580a60bd4a65a39b0
+INFO:     10.55.68.4:55612 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55613 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55614 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55615 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+Terminating session: a82e340d5f54453580a60bd4a65a39b0
+INFO:     10.55.68.4:55617 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: aa72a654f6ea447c9892e09a9d80ca57
+INFO:     10.55.68.4:55627 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55628 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55629 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55630 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55632 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: aa72a654f6ea447c9892e09a9d80ca57
+INFO:     10.55.68.4:55633 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 20d2bc1d73e54bfa8536cc242e63aac0
+INFO:     10.55.68.4:55651 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55652 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55653 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55654 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55658 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 20d2bc1d73e54bfa8536cc242e63aac0
+INFO:     10.55.68.4:55660 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 8103b69123984e08ab12bd474690530d
+INFO:     10.55.68.4:55686 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55687 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55688 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55689 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55691 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 8103b69123984e08ab12bd474690530d
+INFO:     10.55.68.4:55695 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: cd05c1b51220476499d1e55911ffdd5d
+INFO:     10.55.68.4:55708 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55709 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55710 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55711 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55717 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: cd05c1b51220476499d1e55911ffdd5d
+INFO:     10.55.68.4:55726 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 6fed22154fa0472bb12064681a8ea064
+INFO:     10.55.68.4:55773 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55774 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55775 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55776 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55778 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 6fed22154fa0472bb12064681a8ea064
+INFO:     10.55.68.4:55779 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 8b9ab6e70c184b13bc68c5f454bf68de
+INFO:     10.55.68.4:55792 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55793 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55794 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55795 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55797 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 8b9ab6e70c184b13bc68c5f454bf68de
+INFO:     10.55.68.4:55802 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [8089]
+  File "/Users/essamrafie/dev/okf-converter/mcp_server.py", line 558
+    global _DEFAULT_BUNDLE_DIR
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: name '_DEFAULT_BUNDLE_DIR' is used prior to global declaration
+  File "/Users/essamrafie/dev/okf-converter/mcp_server.py", line 558
+    global _DEFAULT_BUNDLE_DIR
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: name '_DEFAULT_BUNDLE_DIR' is used prior to global declaration
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [8722]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: f1c1651c8dba41b5bf10339385e770aa
+INFO:     10.55.68.4:55940 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55941 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55942 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55943 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55945 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: f1c1651c8dba41b5bf10339385e770aa
+INFO:     10.55.68.4:55950 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 0d7d4072bae64dccaf416f4088362851
+INFO:     10.55.68.4:55962 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55963 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55964 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55965 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55966 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 0d7d4072bae64dccaf416f4088362851
+INFO:     10.55.68.4:55970 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: b3cd237d5d67496b8f3ddc5eff9f9551
+INFO:     10.55.68.4:55976 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55977 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55978 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55979 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55980 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: b3cd237d5d67496b8f3ddc5eff9f9551
+INFO:     10.55.68.4:55983 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 7348d4dfd0b748b7a532849a8dba5cf1
+INFO:     10.55.68.4:55990 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55991 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:55992 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:55993 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:55994 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 7348d4dfd0b748b7a532849a8dba5cf1
+INFO:     10.55.68.4:55998 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: cc6dcf740b5247758f555e0d922051f9
+INFO:     10.55.68.4:56091 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56092 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56093 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56094 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+Created new transport with session ID: a638b1cf51ad475399337e9f5538a3e6
+INFO:     10.55.68.4:56162 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56163 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56164 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56165 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56166 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: a638b1cf51ad475399337e9f5538a3e6
+INFO:     10.55.68.4:56168 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for connections to close. (CTRL+C to force quit)
+ERROR:    ASGI callable returned without completing response.
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [8722]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [11098]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+INFO:     10.55.68.4:56365 - "GET /mcp HTTP/1.1" 404 Not Found
+Created new transport with session ID: 7e4f608a7c6e401d92511e13f5759e6d
+INFO:     10.55.68.4:56430 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56431 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56432 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56433 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56436 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 7e4f608a7c6e401d92511e13f5759e6d
+INFO:     10.55.68.4:56439 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11098]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [13327]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+INFO:     10.55.68.4:56540 - "DELETE /mcp HTTP/1.1" 404 Not Found
+Created new transport with session ID: da72106e5b35467383e4c53c8cce1726
+INFO:     10.55.68.4:56545 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56546 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56547 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56548 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56550 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: da72106e5b35467383e4c53c8cce1726
+INFO:     10.55.68.4:56556 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 4dff83b1f0314bfebf7d9bad77ac8a14
+INFO:     10.55.68.4:56592 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56593 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56594 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56595 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56599 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 4dff83b1f0314bfebf7d9bad77ac8a14
+INFO:     10.55.68.4:56600 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13327]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [13494]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: 4ae3ef7a74b042d59ad2a54d957e343e
+INFO:     10.55.68.4:56635 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56636 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56637 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56638 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56640 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 4ae3ef7a74b042d59ad2a54d957e343e
+INFO:     10.55.68.4:56643 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: dbe0cff729ac44ceaa940436264fae2e
+INFO:     10.55.68.4:56661 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56662 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56663 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56664 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56666 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: dbe0cff729ac44ceaa940436264fae2e
+INFO:     10.55.68.4:56669 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13494]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [13627]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: 44c10d58c1624d69be0ef4fc908c3487
+INFO:     10.55.68.4:56702 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56703 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56704 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56705 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56707 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 44c10d58c1624d69be0ef4fc908c3487
+INFO:     10.55.68.4:56710 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13627]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [13699]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: 1aefe5d8925f4fb184666cc227584272
+INFO:     10.55.68.4:56748 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56749 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56750 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56751 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56755 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 1aefe5d8925f4fb184666cc227584272
+INFO:     10.55.68.4:56756 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13699]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [13779]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: 06313aa056ca42ab8a13eea5c5dfb71c
+INFO:     10.55.68.4:56793 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56794 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56795 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56796 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56798 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 06313aa056ca42ab8a13eea5c5dfb71c
+INFO:     10.55.68.4:56801 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 362bb82adad845afb741bf01450765a2
+INFO:     10.55.68.4:56858 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56859 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56860 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56861 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56863 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 362bb82adad845afb741bf01450765a2
+INFO:     10.55.68.4:56865 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13779]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [14122]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14122]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [14278]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+Created new transport with session ID: 890fb443c6554155b079b0af47b6d58b
+INFO:     10.55.68.4:56950 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56951 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:56952 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:56953 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:56955 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 890fb443c6554155b079b0af47b6d58b
+INFO:     10.55.68.4:56957 - "DELETE /mcp HTTP/1.1" 200 OK
+Created new transport with session ID: 098a40fd7c5545b6ad57e0908439d02c
+INFO:     10.55.68.4:57013 - "POST /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:57014 - "GET /mcp HTTP/1.1" 200 OK
+INFO:     10.55.68.4:57015 - "POST /mcp HTTP/1.1" 202 Accepted
+INFO:     10.55.68.4:57016 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type ListToolsRequest
+INFO:     10.55.68.4:57018 - "POST /mcp HTTP/1.1" 200 OK
+Processing request of type CallToolRequest
+Terminating session: 098a40fd7c5545b6ad57e0908439d02c
+INFO:     10.55.68.4:57019 - "DELETE /mcp HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14278]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [14540]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+StreamableHTTP session manager shutting down
+INFO:     Application shutdown complete.
+INFO:     Finished server process [14540]
+Tool already exists: okf_search_bundle
+Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...
+INFO:     Started server process [14587]
+INFO:     Waiting for application startup.
+StreamableHTTP session manager started
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8006 (Press CTRL+C to quit)

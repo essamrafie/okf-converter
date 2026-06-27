@@ -128,6 +128,33 @@ def extract_text(src: Path) -> tuple[str, str]:
                 parts.append("\n".join(rows))
 
             body = "\n\n".join(parts)
+
+            # If no text extracted, OCR embedded images
+            if not body.strip():
+                try:
+                    import pytesseract
+                    from PIL import Image
+                    import io
+
+                    ns_blip = '{http://schemas.openxmlformats.org/drawingml/2006/main}blip'
+                    ns_embed = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed'
+                    ocr_parts = []
+                    for i, blip in enumerate(doc.element.findall(f'.//{ns_blip}')):
+                        r_id = blip.get(ns_embed)
+                        if r_id and r_id in doc.part.related_parts:
+                            rp = doc.part.related_parts[r_id]
+                            img = Image.open(io.BytesIO(rp.blob))
+                            if img.mode in ('RGBA', 'P'):
+                                img = img.convert('RGB')
+                            text = pytesseract.image_to_string(img)
+                            if text.strip():
+                                ocr_parts.append(f"## Image {i+1}\n\n{text.strip()}")
+                    if ocr_parts:
+                        body = "# OCR Extracted Text\n\n" + "\n\n".join(ocr_parts)
+                        return body, "docx-ocr"
+                except ImportError:
+                    pass
+
             return body, "docx"
         except Exception as e:
             return f"[docx extraction error: {e}]", "error"

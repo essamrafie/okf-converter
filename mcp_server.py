@@ -48,11 +48,23 @@ _DEFAULT_API_KEY = (
 
 mcp = FastMCP("okf-converter", host="0.0.0.0", port=8006)
 
+# Default bundle directory (configurable via --bundle-dir)
+_DEFAULT_BUNDLE_DIR = str(Path.home() / "dev" / "okf-converter")
+
 
 # ── Helper ────────────────────────────────────────────────────────
 def _resolve_path(path_str: str) -> str:
-    """Resolve ~ and return absolute path string."""
-    return str(Path(path_str).expanduser().resolve())
+    """Resolve ~ and return absolute path string.
+    If the path doesn't exist, tries resolving relative to the default project dir."""
+    p = Path(path_str).expanduser()
+    if p.exists():
+        return str(p.resolve())
+    # Try relative to project dir
+    for sub in ["", "sample-input"]:
+        alt = Path(_DEFAULT_BUNDLE_DIR) / sub / path_str
+        if alt.exists():
+            return str(alt.resolve())
+    return str(p.resolve())
 
 
 # ── Tools ─────────────────────────────────────────────────────────
@@ -62,7 +74,7 @@ def okf_read(input_file: str) -> str:
     """Extract and return the full text content of a file (docx, pdf, code, etc.).
 
     Args:
-        input_file: Absolute path to the file to read.
+        input_file: Absolute or relative path to the file to read. Relative paths are resolved under the project directory.
     """
     from okf_convert import extract_text
 
@@ -72,12 +84,43 @@ def okf_read(input_file: str) -> str:
 
     try:
         content, note = extract_text(fp)
-        return json.dumps({
+        result = {
             "file": str(fp),
             "extraction": note,
             "chars": len(content),
             "content": content,
-        }, indent=2)
+        }
+
+        # If no text was extracted and the file has images, OCR them
+        if not content.strip() and fp.suffix.lower() in (".docx", ".pptx"):
+            try:
+                import base64, io, pytesseract
+                from PIL import Image
+
+                if fp.suffix.lower() == ".docx":
+                    import docx as python_docx
+                    doc = python_docx.Document(str(fp))
+                    ns_blip = '{http://schemas.openxmlformats.org/drawingml/2006/main}blip'
+                    ns_embed = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed'
+                    ocr_parts = []
+                    for i, blip in enumerate(doc.element.findall(f'.//{ns_blip}')):
+                        r_id = blip.get(ns_embed)
+                        if r_id and r_id in doc.part.related_parts:
+                            rp = doc.part.related_parts[r_id]
+                            img = Image.open(io.BytesIO(rp.blob))
+                            if img.mode in ('RGBA', 'P'):
+                                img = img.convert('RGB')
+                            text = pytesseract.image_to_string(img)
+                            if text.strip():
+                                ocr_parts.append(f"## Image {i+1}\n\n{text.strip()}")
+                    if ocr_parts:
+                        result["content"] = "# OCR Extracted Text\n\n" + "\n\n".join(ocr_parts)
+                        result["chars"] = len(result["content"])
+                        result["note"] = "docx-ocr"
+            except Exception:
+                pass
+
+        return json.dumps(result, indent=2)
     except Exception as e:
         return json.dumps({"error": str(e)})
 
@@ -134,9 +177,9 @@ def okf_read_concept(bundle_dir: str, concept_name: str) -> str:
     """
     bd = Path(_resolve_path(bundle_dir))
 
-    # If not found, try common locations
+    # If not found, try the configured default bundle dir
     if not bd.is_dir():
-        alt = Path.home() / "dev" / "okf-converter" / bundle_dir
+        alt = Path(_DEFAULT_BUNDLE_DIR) / bundle_dir
         if alt.is_dir():
             bd = alt
 
@@ -197,9 +240,9 @@ def okf_search_bundle(bundle_dir: str, query: str) -> str:
 
     bd = Path(_resolve_path(bundle_dir))
 
-    # If not found, try common locations
+    # If not found, try the configured default bundle dir
     if not bd.is_dir():
-        alt = Path.home() / "dev" / "okf-converter" / bundle_dir
+        alt = Path(_DEFAULT_BUNDLE_DIR) / bundle_dir
         if alt.is_dir():
             bd = alt
 
@@ -544,11 +587,17 @@ def okf_search_bundle(bundle_dir: str, query: str) -> str:
 # ── Main ──────────────────────────────────────────────────────────
 
 def main():
+    global _DEFAULT_BUNDLE_DIR
+
     parser = argparse.ArgumentParser(description="OKF Converter MCP Server")
     parser.add_argument("mode", nargs="?", default="stdio",
                         choices=["stdio", "sse"],
                         help="Transport mode (default: stdio)")
+    parser.add_argument("--bundle-dir", default=_DEFAULT_BUNDLE_DIR,
+                        help=f"Default bundle/project directory (default: {_DEFAULT_BUNDLE_DIR})")
     args = parser.parse_args()
+
+    _DEFAULT_BUNDLE_DIR = os.path.abspath(args.bundle_dir)
 
     if args.mode == "sse":
         print("Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...", file=sys.stderr)
