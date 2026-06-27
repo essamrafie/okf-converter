@@ -12,8 +12,10 @@ Run with stdio transport (for Claude Desktop / CLI clients):
 
 import argparse
 import os
+import re
 import sys
 import json
+import yaml
 from pathlib import Path
 
 # Ensure the project root is on sys.path so we can import okf_convert
@@ -44,7 +46,7 @@ _DEFAULT_API_KEY = (
     or (_api_key_path.read_text(encoding="utf-8").strip() if _api_key_path.exists() else "")
 )
 
-mcp = FastMCP("okf-converter", port=8006)
+mcp = FastMCP("okf-converter", host="0.0.0.0", port=8006)
 
 
 # ── Helper ────────────────────────────────────────────────────────
@@ -54,6 +56,70 @@ def _resolve_path(path_str: str) -> str:
 
 
 # ── Tools ─────────────────────────────────────────────────────────
+
+@mcp.tool()
+def okf_read(input_file: str) -> str:
+    """Extract and return the full text content of a file (docx, pdf, code, etc.).
+
+    Args:
+        input_file: Absolute path to the file to read.
+    """
+    from okf_convert import extract_text
+
+    fp = Path(_resolve_path(input_file))
+    if not fp.is_file():
+        return json.dumps({"error": f"File not found: {fp}"})
+
+    try:
+        content, note = extract_text(fp)
+        return json.dumps({
+            "file": str(fp),
+            "extraction": note,
+            "chars": len(content),
+            "content": content,
+        }, indent=2)
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+
+@mcp.tool()
+def okf_search(input_dir: str, query: str) -> str:
+    """Search for text across all supported files in a directory.
+
+    Args:
+        input_dir: Path to the source directory.
+        query: Text or regex pattern to search for (case-insensitive).
+    """
+    import re
+
+    src = Path(_resolve_path(input_dir))
+    if not src.is_dir():
+        return json.dumps({"error": f"Directory not found: {src}"})
+
+    from okf_convert import collect_files, extract_text
+
+    files = collect_files(src)
+    results = []
+    for fp in files:
+        try:
+            content, _ = extract_text(fp)
+            lines = content.split("\n")
+            for i, line in enumerate(lines, 1):
+                if re.search(query, line, re.IGNORECASE):
+                    results.append({
+                        "file": str(fp.relative_to(src)),
+                        "line": i,
+                        "match": line.strip()[:200],
+                    })
+        except Exception:
+            pass
+
+    return json.dumps({
+        "query": query,
+        "matches": len(results),
+        "results": results[:50],
+    }, indent=2)
+
 
 @mcp.tool()
 def okf_preview(input_dir: str) -> str:
@@ -218,6 +284,152 @@ def okf_dry_run(
         return json.dumps({"error": str(e)})
 
 
+# ── Bundle Query Tools ────────────────────────────────────────────
+
+@mcp.tool()
+def okf_list_bundle(bundle_dir: str) -> str:
+    """List all concepts in an existing OKF bundle — read the bundle index.
+
+    Args:
+        bundle_dir: Path to the OKF bundle directory.
+    """
+    src = Path(_resolve_path(bundle_dir))
+    if not src.is_dir():
+        return json.dumps({"error": f"Bundle directory not found: {src}"})
+
+    index = src / "index.md"
+    if not index.is_file():
+        return json.dumps({"error": "No index.md found — not an OKF bundle"})
+
+    content = index.read_text(encoding="utf-8")
+    # Parse concepts from the index markdown
+    concepts = []
+    for line in content.split("\n"):
+        m = re.match(r"- \[(.+?)\]\((.+?)\)", line)
+        if m:
+            concepts.append({"title": m.group(1), "path": m.group(2)})
+
+    # Also scan for subdirectory indexes
+    subdirs = {}
+    for idx in sorted(src.rglob("*/index.md")):
+        rel = idx.relative_to(src)
+        if str(rel) != "index.md":
+            subdirs[str(rel.parent)] = idx
+
+    return json.dumps({
+        "bundle": str(src),
+        "total_concepts": len(concepts),
+        "concepts": concepts,
+        "subdirectories": list(subdirs.keys()),
+    }, indent=2)
+
+
+@mcp.tool()
+def okf_get_concept(bundle_dir: str, concept_path: str) -> str:
+    """Retrieve the full content of a concept file from an OKF bundle.
+
+    Args:
+        bundle_dir: Path to the OKF bundle directory.
+        concept_path: Relative path to the concept .md file (e.g. 'docs/dubai-crude-analysis.md').
+    """
+    src = Path(_resolve_path(bundle_dir))
+    if not src.is_dir():
+        return json.dumps({"error": f"Bundle directory not found: {src}"})
+
+    fp = src / concept_path.lstrip("/")
+    if not fp.is_file():
+        return json.dumps({"error": f"Concept not found: {concept_path}"})
+
+    if fp.suffix != ".md":
+        return json.dumps({"error": "Not a concept file — bundle concepts are .md files"})
+
+    raw = fp.read_text(encoding="utf-8")
+
+    # Parse frontmatter
+    fm = {}
+    body = raw
+    if raw.startswith("---"):
+        end = raw.find("---", 3)
+        if end > 0:
+            try:
+                fm = yaml.safe_load(raw[3:end])
+            except Exception:
+                fm = {}
+            body = raw[end + 3:].strip()
+
+    return json.dumps({
+        "file": concept_path,
+        "frontmatter": fm,
+        "body_chars": len(body),
+        "body": body,
+    }, indent=2)
+
+
+@mcp.tool()
+def okf_search_bundle(bundle_dir: str, query: str) -> str:
+    """Search across all concept files in an OKF bundle.
+
+    Searches both frontmatter (title, type, tags, description) and body content.
+
+    Args:
+        bundle_dir: Path to the OKF bundle directory.
+        query: Text or regex pattern to search for (case-insensitive).
+    """
+    import re as _re
+
+    src = Path(_resolve_path(bundle_dir))
+    if not src.is_dir():
+        return json.dumps({"error": f"Bundle directory not found: {src}"})
+
+    from okf_convert import RESERVED_FILENAMES
+
+    results = []
+    for md_path in sorted(src.rglob("*.md")):
+        rel = md_path.relative_to(src)
+        # Skip reserved files (index, log, manifest)
+        if rel.parts[0].startswith("."):
+            continue
+        if md_path.stem.lower() in RESERVED_FILENAMES:
+            continue
+
+        raw = md_path.read_text(encoding="utf-8")
+
+        # Parse frontmatter for metadata search
+        fm_text = ""
+        body = raw
+        if raw.startswith("---"):
+            end = raw.find("---", 3)
+            if end > 0:
+                fm_text = raw[3:end]
+                body = raw[end + 3:].strip()
+
+        # Search frontmatter
+        fm_matches = []
+        for i, line in enumerate(fm_text.split("\n"), 1):
+            if _re.search(query, line, _re.IGNORECASE):
+                fm_matches.append({"line": i, "match": line.strip()[:200]})
+
+        # Search body
+        body_matches = []
+        for i, line in enumerate(body.split("\n"), 1):
+            if _re.search(query, line, _re.IGNORECASE):
+                body_matches.append({"line": i, "match": line.strip()[:200]})
+
+        if fm_matches or body_matches:
+            results.append({
+                "concept": str(rel),
+                "frontmatter_matches": len(fm_matches),
+                "body_matches": len(body_matches),
+                "snippet": body_matches[0]["match"] if body_matches else fm_matches[0]["match"],
+            })
+
+    return json.dumps({
+        "query": query,
+        "matches": len(results),
+        "results": results[:30],
+    }, indent=2)
+
+
 # ── Main ──────────────────────────────────────────────────────────
 
 def main():
@@ -228,8 +440,8 @@ def main():
     args = parser.parse_args()
 
     if args.mode == "sse":
-        print("Starting OKF MCP server on SSE (port 8006)...", file=sys.stderr)
-        mcp.run(transport="sse")
+        print("Starting OKF MCP server on Streamable HTTP (0.0.0.0:8006)...", file=sys.stderr)
+        mcp.run(transport="streamable-http")
     else:
         mcp.run(transport="stdio")
 

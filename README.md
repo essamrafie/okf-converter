@@ -173,6 +173,8 @@ python mcp_server.py
 | Tool | Description |
 |------|-------------|
 | `okf_preview` | Scan a directory and count supported files by type |
+| `okf_read` | Extract and return the full text content of any file |
+| `okf_search` | Search for text across all files in a directory |
 | `okf_convert` | Full conversion — every file becomes an OKF concept |
 | `okf_sync` | Incremental sync — only new/changed/deleted files |
 | `okf_dry_run` | Preview without writing anything |
