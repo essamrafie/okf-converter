@@ -80,7 +80,7 @@ CONFIG_EXTENSIONS = {".yaml", ".yml", ".json", ".toml", ".cfg", ".ini", ".env"}
 
 # ─────────────────────────────────────────────────────────────
 # ── Image extraction helper for OOXML files (docx, pptx) ──────────
-def _extract_ooxml_images(element, related_parts, max_size: int = 800) -> tuple[list[str], int]:
+def _extract_ooxml_images(element, related_parts, max_size: int = 300) -> tuple[list[str], int]:
     """Extract embedded images from a docx/pptx element as base64 JPEG data URIs.
     Images are resized to fit within max_size pixels (longest side) and compressed
     to keep concept files lean for LLM context windows.
@@ -203,8 +203,8 @@ def extract_text(src: Path) -> tuple[str, str]:
                             img_data = shape.image.blob
                             img = Image.open(io.BytesIO(img_data))
                             w, h = img.size
-                            if max(w, h) > 800:
-                                ratio = 800 / max(w, h)
+                            if max(w, h) > 300:
+                                ratio = 300 / max(w, h)
                                 img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
                             if img.mode in ('RGBA', 'P'):
                                 img = img.convert('RGB')
