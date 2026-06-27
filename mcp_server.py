@@ -312,13 +312,10 @@ def okf_sync(
     llm_endpoint: str = DEFAULT_ENDPOINT,
     llm_model: str = DEFAULT_MODEL,
     api_key: str = "",
-    prune: bool = False,
 ) -> str:
     """Incrementally sync an existing OKF bundle with source directory changes.
 
     Only processes new, modified, or deleted files since the last conversion.
-    By default, deleted source files keep their concepts in the bundle.
-    Set prune=True to also remove concepts for deleted source files.
 
     Args:
         input_dir: Path to the source directory.
@@ -326,7 +323,6 @@ def okf_sync(
         llm_endpoint: OpenAI-compatible LLM endpoint for enrichment.
         llm_model: Model name for enrichment.
         api_key: API key for the LLM endpoint.
-        prune: If true, remove concepts for deleted source files.
     """
     src = Path(_resolve_path(input_dir))
     out = Path(_resolve_path(output_dir))
@@ -351,7 +347,6 @@ def okf_sync(
                 model=llm_model,
                 api_key=key,
                 dry_run=False,
-                prune=prune,
             )
         return buf.getvalue()
     except Exception as e:
