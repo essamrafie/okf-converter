@@ -152,6 +152,42 @@ def greet(name: str) -> str:
 4. **Bundle** — writes each concept as an OKF `.md` file with frontmatter + body, generates `index.md` + per-subdirectory indexes + `log.md`
 5. **Track** — stores SHA-256 hashes in `.okf_manifest.json` for incremental `--sync`
 
+## MCP Server
+
+The project includes an MCP server (`mcp_server.py`) that exposes OKF conversion as AI-consumable tools. Use it to add OKF conversion to any MCP-compatible client — **Open Web UI**, Claude Desktop, Cursor, etc.
+
+### Running
+
+```bash
+source .venv/bin/activate
+
+# For Open Web UI (SSE transport on port 8006):
+python mcp_server.py sse
+
+# For Claude Desktop / CLI clients (stdio transport):
+python mcp_server.py
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `okf_preview` | Scan a directory and count supported files by type |
+| `okf_convert` | Full conversion — every file becomes an OKF concept |
+| `okf_sync` | Incremental sync — only new/changed/deleted files |
+| `okf_dry_run` | Preview without writing anything |
+
+### Connecting to Open Web UI
+
+1. Run the server: `python mcp_server.py sse`
+2. In Open Web UI, go to **Workspace** → **Tools** → **MCP Servers**
+3. Add a new MCP server with:
+   - **Name**: `okf-converter`
+   - **URL**: `http://host.docker.internal:8006/sse` (if Open Web UI is in Docker)
+   - Or use your Mac's LAN IP: `http://10.55.68.24:8006/sse`
+
+The server reads your DeepSeek API key from `~/deepseek_api` automatically — no manual config needed for enrichment.
+
 ## Links
 
 | Resource | URL |

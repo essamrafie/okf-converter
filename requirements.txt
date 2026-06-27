@@ -1,6 +1,7 @@
 # Core dependencies — always required
 pyyaml
 requests
+mcp
 
 # Office & PDF support (optional — only needed for .docx/.pptx/.xlsx/.csv/.pdf)
 # python-docx
