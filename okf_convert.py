@@ -101,6 +101,10 @@ def extract_text(src: Path) -> tuple[str, str]:
     if ext == ".docx":
         try:
             import docx as python_docx
+            import base64
+            from PIL import Image
+            import io
+
             doc = python_docx.Document(str(src))
             parts = []
             for para in doc.paragraphs:
@@ -115,6 +119,7 @@ def extract_text(src: Path) -> tuple[str, str]:
                         parts.append(f"{h} {para.text}")
                     else:
                         parts.append(para.text)
+
             # Tables
             for table in doc.tables:
                 rows = []
@@ -124,7 +129,31 @@ def extract_text(src: Path) -> tuple[str, str]:
                     if i == 0:
                         rows.append("|" + "|".join(["---"] * len(cells)) + "|")
                 parts.append("\n".join(rows))
-            return "\n\n".join(parts), "docx"
+
+            # Images — convert each to base64 for multimodal LLMs
+            image_count = 0
+            ns_blip = '{http://schemas.openxmlformats.org/drawingml/2006/main}blip'
+            ns_embed = '{http://schemas.openxmlformats.org/officeDocument/2006/relationships}embed'
+            for blip in doc.element.findall(f'.//{ns_blip}'):
+                r_id = blip.get(ns_embed)
+                if r_id and r_id in doc.part.related_parts:
+                    try:
+                        rp = doc.part.related_parts[r_id]
+                        img_data = rp.blob
+                        img = Image.open(io.BytesIO(img_data))
+                        buf = io.BytesIO()
+                        img.save(buf, format="PNG")
+                        b64 = base64.b64encode(buf.getvalue()).decode()
+                        parts.append(f"![Image {image_count+1}](data:image/png;base64,{b64})")
+                        image_count += 1
+                    except Exception:
+                        pass
+
+            body = "\n\n".join(parts)
+            note = "docx"
+            if image_count:
+                note = f"docx-{image_count}img"
+            return body, note
         except Exception as e:
             return f"[docx extraction error: {e}]", "error"
 
