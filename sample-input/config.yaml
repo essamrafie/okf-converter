@@ -1,0 +1,5 @@
+service: okf-demo
+version: 1.0
+endpoints:
+  - path: /api/v1/convert
+    method: POST
