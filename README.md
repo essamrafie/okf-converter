@@ -58,17 +58,13 @@ pip install pytesseract Pillow
 
 ### 6. Set Up API Key
 
-Save your DeepSeek (or other LLM) API key — the converter picks it up automatically:
+The converter needs an API key for LLM enrichment. Export it as an environment variable:
 
 ```bash
-echo "sk-your-api-key-here" > ~/deepseek_api
+export DEEPSEEK_API_KEY="sk-your-key-here"
 ```
 
-Or set it as an environment variable:
-
-```bash
-export DEEPSEEK_API_KEY="sk-your-api-key-here"
-```
+Or pass it directly with `--api-key`.
 
 ---
 
@@ -108,7 +104,7 @@ required:
 LLM enrichment:
   --endpoint URL      OpenAI-compatible base URL (default: http://localhost:4000/v1)
   --model NAME        Model for type/title/description/tags (default: gpt-4o-mini)
-  --api-key KEY       API key (auto-reads from ~/deepseek_api, DEEPSEEK_API_KEY, or LITELLM_API_KEY)
+  --api-key KEY       API key (set via DEEPSEEK_API_KEY or LITELLM_API_KEY env var)
 
 modes:
   --sync              Incremental sync — add, update, and delete concepts to mirror source
@@ -150,10 +146,10 @@ python mcp_server.py sse
 2. In Open Web UI go to **⚙️ Admin Settings → External Tools → + Add Server**
 3. Set:
    - **Type**: `MCP (Streamable HTTP)`
-   - **URL**: `http://host.docker.internal:8006/mcp` (Docker) or `http://10.55.68.4:8006/mcp` (LAN)
+   - **URL**: `http://host.docker.internal:8006/mcp` (Docker) or `http://<your-lan-ip>:8006/mcp`
 4. Save
 
-The server reads your API key from `~/deepseek_api` automatically.
+The server reads your API key from the `DEEPSEEK_API_KEY` environment variable automatically.
 
 ### Run as a Service (macOS)
 
