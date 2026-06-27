@@ -1,85 +1,100 @@
 # OKF Converter
 
-Convert any directory of documents, code, and data into an **OKF-conformant knowledge bundle**.
+Convert any directory of documents, code, and data into an **OKF-conformant knowledge bundle** — searchable, LLM-enriched markdown concepts that you can query and sync incrementally.
 
-**OKF** (Open Knowledge Format) is [Google Cloud's open specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) for representing knowledge as portable, cross-linked markdown that humans and AI agents can read. Announced June 2026, it formalizes [Andrej Karpathy's LLM Wiki pattern](https://github.com/karpathy/LLM-Wiki) — minimal, filesystem-native, no database required.
+**OKF** (Open Knowledge Format) is [Google Cloud's open specification](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) for portable, cross-linked knowledge that humans and AI agents can read. No database, no runtime — just directories of `.md` files.
 
-```
-Input:  ./my-docs/                      Output: ./okf-bundle/
-        ├── api-spec.yaml                       ├── index.md          ← table of contents
-        ├── architecture.md                     ├── log.md            ← change log
-        ├── runbook.sh                          ├── api-spec.md       ← LLM-enriched concept
-        ├── report.pdf                          ├── architecture.md
-        └── dataset.csv                         ├── runbook.sh.md
-                                                ├── report.md
-                                                ├── dataset.csv.md
-                                                └── .okf_manifest.json  ← SHA-256 tracking
-```
-
-## Why OKF?
-
-OKF bundles are:
-- **Self-contained** — a directory of plain `.md` files, zero runtime dependencies
-- **AI-native** — YAML frontmatter (`type`, `title`, `description`, `tags`) lets agents discover and consume knowledge without parsing
-- **Portable** — version-controlled in git, synced via rsync, served from any static file server
-- **Extensible** — cross-link concepts with standard markdown links; add any extra frontmatter fields you need
+---
 
 ## Features
 
-- **Multi-format ingestion** — code, configs, documentation, Office docs, PDFs (including scanned pages as base64 images for multimodal LLMs)
-- **LLM enrichment** — each file gets auto-generated `type`, `title`, `description`, and `tags` via any OpenAI-compatible endpoint
-- **Incremental sync** (`--sync`) — re-run on an evolving directory; only new/changed/deleted files are processed
-- **Idempotent** — SHA-256 manifest tracks everything; unchanged files are skipped
-- **Conformant** — produces standard OKF v0.1 bundles with proper frontmatter, `index.md`, `log.md`, and cross-linking
-- **Dry-run** (`--dry-run`) — preview changes without writing anything
+- **Multi-format** — PDF, DOCX, PPTX, XLSX, CSV, images (OCR via Tesseract), code, configs
+- **LLM enrichment** — auto-generates `type`, `title`, `description`, `tags` via any OpenAI-compatible API (DeepSeek, OpenAI, Ollama, LiteLLM)
+- **Incremental sync** — `--sync` mirrors your source directory: add files → add concepts, remove files → remove concepts
+- **OCR** — image-only documents (screenshots in docx) are OCR'd with Tesseract
+- **MCP server** — expose OKF tools to Open Web UI, Claude Desktop, Cursor
+- **Portable** — plain markdown, git-friendly, no database
 
-## Supported Formats
+---
 
-| Type | Extensions |
-|------|-----------|
-| **Text** | `.md` `.txt` `.rst` `.py` `.js` `.ts` `.sh` `.yaml` `.yml` `.json` `.toml` `.cfg` `.ini` `.env` |
-| **Office** | `.docx` `.pptx` `.xlsx` `.xls` `.xlsm` `.csv` `.tsv` |
-| **PDF** | `.pdf` (text layer + scanned pages auto-embedded as base64 PNG for multimodal LLMs) |
+## Step-by-Step Installation
 
-## Quick Start
-
-### 1. Install
+### 1. Clone
 
 ```bash
 git clone https://github.com/essamrafie/okf-converter.git
 cd okf-converter
+```
 
+### 2. Create Virtual Environment
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+```
 
-# Optional — for Office & PDF support:
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. (Optional) Install Office & PDF Parsers
+
+For DOCX, PPTX, XLSX, PDF, CSV support:
+
+```bash
 pip install python-docx python-pptx openpyxl pandas PyMuPDF xlrd tabulate
 ```
 
-### 2. Convert
+### 5. (Optional) Install OCR
+
+For extracting text from images inside documents:
 
 ```bash
-# Full conversion — every file becomes an OKF concept
-python okf_convert.py --input ./sample-input --output ./okf-bundle
+brew install tesseract
+pip install pytesseract Pillow
+```
 
-# With LLM enrichment (defaults to localhost:4000/v1, gpt-4o-mini)
+### 6. Set Up API Key
+
+Save your DeepSeek (or other LLM) API key — the converter picks it up automatically:
+
+```bash
+echo "sk-your-api-key-here" > ~/deepseek_api
+```
+
+Or set it as an environment variable:
+
+```bash
+export DEEPSEEK_API_KEY="sk-your-api-key-here"
+```
+
+---
+
+## Usage
+
+### Convert a Directory
+
+```bash
 python okf_convert.py --input ./sample-input --output ./okf-bundle \
-    --endpoint http://my-llm-server/v1 --model qwen3-30b
+    --endpoint https://api.deepseek.com/v1 --model deepseek-chat
+```
 
-# Dry-run — see what would happen
+### Sync After Changes
+
+```bash
+# Add or remove files from ./sample-input, then:
+python okf_convert.py --input ./sample-input --output ./okf-bundle --sync
+```
+
+### Preview Without Writing
+
+```bash
 python okf_convert.py --input ./sample-input --output ./okf-bundle --dry-run
 ```
 
-### 3. Sync on Changes
-
-```bash
-# After adding/editing/deleting source files:
-python okf_convert.py --input ./sample-input --output ./okf-bundle --sync
-
-# Preview before applying:
-python okf_convert.py --input ./sample-input --output ./okf-bundle --sync --dry-run
-```
+---
 
 ## CLI Reference
 
@@ -87,43 +102,120 @@ python okf_convert.py --input ./sample-input --output ./okf-bundle --sync --dry-
 usage: okf_convert.py --input INPUT --output OUTPUT [options]
 
 required:
-  --input INPUT       Source directory to scan
+  --input INPUT       Source directory
   --output OUTPUT     OKF bundle output path
 
 LLM enrichment:
   --endpoint URL      OpenAI-compatible base URL (default: http://localhost:4000/v1)
   --model NAME        Model for type/title/description/tags (default: gpt-4o-mini)
-  --api-key KEY       API key (or set LITELLM_API_KEY env var)
+  --api-key KEY       API key (auto-reads from ~/deepseek_api, DEEPSEEK_API_KEY, or LITELLM_API_KEY)
 
 modes:
-  --sync              Incremental sync — only process new/changed/deleted files
+  --sync              Incremental sync — add, update, and delete concepts to mirror source
   --dry-run           Preview without writing anything
 ```
 
-## How OKF Conformance Works
+---
 
-Every concept in the output bundle follows the [OKF v0.1 spec](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md):
+## MCP Server
+
+Expose OKF tools to AI agents via the [Model Context Protocol](https://modelcontextprotocol.io).
+
+### Run the Server
+
+```bash
+source .venv/bin/activate
+
+# For Open Web UI (Streamable HTTP on port 8006):
+python mcp_server.py sse
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `okf_preview` | Scan a directory and list supported files by type |
+| `okf_read` | Extract text from any file (with OCR fallback for images) |
+| `okf_search` | Search for text across all source files |
+| `okf_read_concept` | Find and read a concept by name from an OKF bundle |
+| `okf_search_bundle` | Search text inside all concept markdown files |
+| `okf_list_bundle` | List all concepts in a bundle |
+| `okf_convert` | Full conversion — every file becomes an OKF concept |
+| `okf_sync` | Incremental sync — only new/changed/deleted files |
+| `okf_dry_run` | Preview without writing anything |
+
+### Connect to Open Web UI
+
+1. Run the server: `python mcp_server.py sse`
+2. In Open Web UI go to **⚙️ Admin Settings → External Tools → + Add Server**
+3. Set:
+   - **Type**: `MCP (Streamable HTTP)`
+   - **URL**: `http://host.docker.internal:8006/mcp` (Docker) or `http://10.55.68.4:8006/mcp` (LAN)
+4. Save
+
+The server reads your API key from `~/deepseek_api` automatically.
+
+### Run as a Service (macOS)
+
+To keep the server running on boot with auto-restart:
+
+```bash
+launchctl load ~/Library/LaunchAgents/com.essam.okf-converter-mcp.plist
+```
+
+To stop:
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.essam.okf-converter-mcp.plist
+```
+
+Logs: `~/dev/okf-converter/mcp-server.log`
+
+---
+
+## Supported Formats
+
+| Type | Extensions | Extraction Method |
+|------|-----------|-------------------|
+| **Text** | `.md` `.txt` `.rst` `.py` `.js` `.ts` `.sh` `.yaml` `.yml` `.json` `.toml` `.cfg` `.ini` `.env` | Direct read |
+| **Office** | `.docx` `.pptx` `.xlsx` `.xls` `.xlsm` | python-docx, python-pptx, openpyxl |
+| **Spreadsheets** | `.csv` `.tsv` | Pandas |
+| **PDF** | `.pdf` | PyMuPDF (text + scanned page rasterization) |
+| **OCR** | Image-only docx/pptx | Tesseract |
+
+---
+
+## Pipeline
+
+1. **Discover** — walks input directory (skips `.git`, `node_modules`, `__pycache__`, `.venv`)
+2. **Extract** — reads text, parses Office/PDF, OCRs images if no text found
+3. **Enrich** — sends extracted content to an LLM for `{type, title, description, tags}`
+4. **Bundle** — writes each concept as an OKF `.md` with YAML frontmatter, `index.md`, `log.md`
+5. **Track** — SHA-256 manifest in `.okf_manifest.json` for incremental sync
+
+---
+
+## How OKF Conformance Works
 
 ### Bundle Structure
 ```
 okf-bundle/
 ├── index.md              ← root listing (okf_version: "0.1" in frontmatter)
-├── log.md                ← chronological change history
+├── log.md                ← change history
 ├── <concept>.md          ← concepts at root
 └── <subdirectory>/
     ├── index.md          ← per-directory listing
     └── <concept>.md
 ```
 
-### Concept Documents
-Each concept is a `.md` file with delimited YAML frontmatter:
+### Concept Format
 
 ```markdown
 ---
 type: Code Module
 title: Greeting Service
-description: A demo greeting module for OKF testing
-tags: [demo, python, hello-world]
+description: A demo greeting module
+tags: [demo, python]
 timestamp: 2026-06-27T12:00:00Z
 source_file: sample-input/hello.py
 source_format: py
@@ -139,56 +231,13 @@ def greet(name: str) -> str:
 ```
 ```
 
-### Mandatory OKF Rules (automatically satisfied)
+### OKF Rules (automatically satisfied)
 - **M1** — Bundle is a directory of `.md` concept files ✓
-- **M2** — Every concept starts with `---` delimited YAML frontmatter ✓
-- **M3** — Frontmatter has non-empty `type` field ✓ (LLM-enriched or inferred from extension)
-- **M6** — No runtime/database needed — just text and files ✓
+- **M2** — Every concept starts with YAML frontmatter ✓
+- **M3** — Frontmatter has non-empty `type` field ✓
+- **M6** — No runtime/database needed ✓
 
-### Pipeline
-1. **Discover** — walks the input directory (skips `.git`, `__pycache__`, `node_modules`, etc.)
-2. **Extract** — reads plain text, parses Office docs via `python-docx`/`openpyxl`/`pandas`, extracts PDF text or rasterizes scanned pages via PyMuPDF
-3. **Enrich** — sends extracted content to an LLM which returns `{type, title, description, tags}`
-4. **Bundle** — writes each concept as an OKF `.md` file with frontmatter + body, generates `index.md` + per-subdirectory indexes + `log.md`
-5. **Track** — stores SHA-256 hashes in `.okf_manifest.json` for incremental `--sync`
-
-## MCP Server
-
-The project includes an MCP server (`mcp_server.py`) that exposes OKF conversion as AI-consumable tools. Use it to add OKF conversion to any MCP-compatible client — **Open Web UI**, Claude Desktop, Cursor, etc.
-
-### Running
-
-```bash
-source .venv/bin/activate
-
-# For Open Web UI (SSE transport on port 8006):
-python mcp_server.py sse
-
-# For Claude Desktop / CLI clients (stdio transport):
-python mcp_server.py
-```
-
-### Available Tools
-
-| Tool | Description |
-|------|-------------|
-| `okf_preview` | Scan a directory and count supported files by type |
-| `okf_read` | Extract and return the full text content of any file |
-| `okf_search` | Search for text across all files in a directory |
-| `okf_convert` | Full conversion — every file becomes an OKF concept |
-| `okf_sync` | Incremental sync — only new/changed/deleted files |
-| `okf_dry_run` | Preview without writing anything |
-
-### Connecting to Open Web UI
-
-1. Run the server: `python mcp_server.py sse`
-2. In Open Web UI, go to **Workspace** → **Tools** → **MCP Servers**
-3. Add a new MCP server with:
-   - **Name**: `okf-converter`
-   - **URL**: `http://host.docker.internal:8006/sse` (if Open Web UI is in Docker)
-   - Or use your Mac's LAN IP: `http://10.55.68.24:8006/sse`
-
-The server reads your DeepSeek API key from `~/deepseek_api` automatically — no manual config needed for enrichment.
+---
 
 ## Links
 
