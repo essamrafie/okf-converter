@@ -784,7 +784,13 @@ def main():
     parser.add_argument("--output",   required=True,             help="OKF bundle directory")
     parser.add_argument("--endpoint", default=DEFAULT_ENDPOINT,  help=f"LiteLLM base URL (default: {DEFAULT_ENDPOINT})")
     parser.add_argument("--model",    default=DEFAULT_MODEL,     help=f"Model for enrichment (default: {DEFAULT_MODEL})")
-    parser.add_argument("--api-key",  default=os.environ.get("LITELLM_API_KEY", ""), help="API key or set LITELLM_API_KEY")
+    default_key = os.environ.get("LITELLM_API_KEY") or os.environ.get("DEEPSEEK_API_KEY") or ""
+    api_key_path = Path("~/deepseek_api").expanduser()
+    if not default_key and api_key_path.exists():
+        default_key = api_key_path.read_text(encoding="utf-8").strip()
+    parser.add_argument("--api-key",  default=default_key,
+                        help="API key (or set LITELLM_API_KEY or DEEPSEEK_API_KEY env var, "
+                             "or save to ~/deepseek_api)")
     parser.add_argument("--sync",     action="store_true",       help="Incremental sync: only process new/changed files")
     parser.add_argument("--dry-run",  action="store_true",       help="Print what would happen without writing files")
 
